@@ -1,6 +1,6 @@
 <div align="center">
 
-# ILD-TexNet
+# TexNet
 
 **A compact multi-scale texture network for six-class ILD pattern classification on 32x32 HRCT patches**
 
@@ -10,7 +10,7 @@
 
 </div>
 
-ILD-TexNet is a multi-scale texture network for interstitial lung disease (ILD) pattern classification on high-resolution CT patches. ~0.25M parameters, trained from scratch, no pretraining. Manuscript and benchmark: [TexNet](https://github.com/rsebany/TexNet).
+TexNet is a multi-scale texture network for interstitial lung disease (ILD) pattern classification on high-resolution CT patches. ~0.25M parameters, trained from scratch, no pretraining. Manuscript and benchmark: [TexNet](https://github.com/rsebany/TexNet).
 
 | Component | Role |
 |-----------|------|
