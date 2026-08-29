@@ -7,6 +7,7 @@
 [![License](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 ![Python](https://img.shields.io/badge/Python-3.9%2B-blue)
 ![PyTorch](https://img.shields.io/badge/PyTorch-2.0-ee4c2c)
+[![Release](https://img.shields.io/badge/Release-v1.0.0-green)](https://github.com/rsebany/TexNet/releases/tag/v1.0.0)
 
 </div>
 
@@ -34,6 +35,8 @@ Build and inspect the model (layer table, parameters, MACs, latency, forward san
 python main.py
 # or, after install: ildexnet [--device cuda --json report.json]
 ```
+
+Pretrained weights (trained from scratch on MedGIFT HRCT patches): [ILDTexNet.pth](https://github.com/rsebany/TexNet/releases/download/v1.0.0/ILDTexNet.pth)
 
 Architecture flags (`--stem-ch`, `--growth`, `--layers`, `--no-multiscale`, `--block bottleneck`, `--no-attn-pool`, ...) mirror `ILDEXNET_*` environment variables in `ildexnet/config.py`.
 
