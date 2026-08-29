@@ -1,18 +1,13 @@
 """Central configuration for ILD-TexNet.
 
-Only the architecture-level settings and the synthetic training-demo settings
-live here. The full training schedule used for the published benchmark is
-maintained in the companion research repository, not in this package. Every
-value can be overridden with an ``ILDEXNET_*`` environment variable.
+Every value can be overridden with an ``ILDEXNET_*`` environment variable.
 """
 
 from __future__ import annotations
 
 import os
 
-# ---------------------------------------------------------------------------
-# Architecture defaults (as reported for the proposed model)
-# ---------------------------------------------------------------------------
+# Architecture defaults
 NUM_CLASSES = int(os.environ.get("ILDEXNET_NUM_CLASSES", "6"))
 IN_CHANNELS = int(os.environ.get("ILDEXNET_IN_CHANNELS", "1"))
 PATCH_SIZE = int(os.environ.get("ILDEXNET_PATCH_SIZE", "32"))
@@ -33,29 +28,12 @@ EXPAND = float(os.environ.get("ILDEXNET_EXPAND", "4"))
 REDUCTION = float(os.environ.get("ILDEXNET_REDUCTION", "0.5"))
 DROPOUT = float(os.environ.get("ILDEXNET_DROPOUT", "0.2"))
 
-# Ablation knobs kept so the design decisions remain auditable.
+# Ablation knobs keep the design decisions auditable.
 USE_MULTISCALE = os.environ.get("ILDEXNET_USE_MULTISCALE", "1") == "1"
 USE_ATTN_POOL = os.environ.get("ILDEXNET_USE_ATTN_POOL", "1") == "1"
 BLOCK = os.environ.get("ILDEXNET_BLOCK", "se_mbconv")  # se_mbconv | bottleneck
 
-# ---------------------------------------------------------------------------
-# Synthetic training demo (no real data is bundled with this package). The
-# demo only proves the forward/backward/optimiser path works end to end.
-# ---------------------------------------------------------------------------
 SEED = int(os.environ.get("ILDEXNET_SEED", "42"))
-EPOCHS = int(os.environ.get("ILDEXNET_EPOCHS", "30"))
-BATCH_SIZE = int(os.environ.get("ILDEXNET_BATCH", "128"))
-LR = float(os.environ.get("ILDEXNET_LR", "1e-3"))
-WEIGHT_DECAY = float(os.environ.get("ILDEXNET_WD", "1e-4"))
-LABEL_SMOOTHING = float(os.environ.get("ILDEXNET_LABEL_SMOOTHING", "0.03"))
-CLASS_WEIGHT_POWER = float(os.environ.get("ILDEXNET_CLASS_WEIGHT_POWER", "0.75"))
-DEMO_SAMPLES = int(os.environ.get("ILDEXNET_DEMO_SAMPLES", "2048"))
-
-OUT_DIR = os.environ.get(
-    "ILDEXNET_OUT_DIR",
-    os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
-                 "outputs"),
-)
 
 
 def build_kwargs(command_line: dict | None = None) -> dict:
@@ -79,7 +57,7 @@ def build_kwargs(command_line: dict | None = None) -> dict:
 
 
 def device(name: str = "auto"):
-    """Resolve the compute device, falling back to CPU when CUDA is absent."""
+    """Resolve compute device, falling back to CPU when CUDA is absent."""
     import torch
 
     if name == "auto":

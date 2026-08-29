@@ -1,9 +1,5 @@
 #!/usr/bin/env python3
-"""Convenience one-command entry point for ILD-TexNet.
-
-Equivalent to ``python -m ildexnet.cli``; also exposed as the ``ildexnet``
-console script after ``pip install -e .``.
-"""
+"""One-command entry point: ``python main.py`` == ``ildexnet`` console script."""
 
 from ildexnet.cli import main
 

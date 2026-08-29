@@ -1,4 +1,4 @@
-"""Unit tests for the ILD-TexNet architecture and CLI demo train path.
+"""Unit tests for the ILD-TexNet architecture and CLI inspect path.
 
 All tests run on CPU with random data -- no dataset download required.
 """
@@ -9,7 +9,6 @@ import torch
 
 from ildexnet.complexity import inspect_model, layer_summary, model_complexity
 from ildexnet.models import ILDTexNet
-from ildexnet.train import train_demo
 
 DEVICE = torch.device("cpu")
 
@@ -53,9 +52,8 @@ def test_ablation_controls_build_and_run(overrides, expected_params_relation):
     if expected_params_relation == "smaller":
         assert nv < nb
     elif expected_params_relation == "equal":
-        # The multi-scale stem reads the input once per dilation branch, so
-        # swapping it for a plain 3x3 conv keeps the parameter count unchanged
-        # by design (the ablation isolates representation, not capacity).
+        # The multi-scale stem reads the input once per dilation branch; the
+        # plain 3x3 stem keeps the same total channels, so the count is equal.
         assert nv == nb
     else:
         assert nv != nb
@@ -93,17 +91,3 @@ def test_inspect_includes_layers_and_timing():
     assert "(root)" in names
     assert any(n.startswith("stem") for n in names)
     assert any(n.startswith("stages") for n in names)
-
-
-def test_synthetic_train_demo_completes_and_learns():
-    model = _model()
-    result = train_demo(model, DEVICE, epochs=6, batch_size=64, n_samples=512,
-                        seed=42, output_dir=None)
-    final = result["final"]
-    assert len(result["history"]) == 6
-    assert 0.0 <= final["val_accuracy"] <= 1.0
-    # The brightness-encoded synthetic classes are trivially separable; a
-    # working pipeline should get well above chance after ~36 optimizer steps.
-    assert final["val_accuracy"] > 0.4
-    assert np.isfinite(final["train_loss"])
-    assert final["val_balanced_accuracy"] >= final["val_accuracy"] - 1.0

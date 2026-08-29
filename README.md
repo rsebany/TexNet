@@ -1,48 +1,33 @@
 # ILD-TexNet
 
-**Requirements:** [Python](https://www.python.org/) ≥ 3.9 · [PyTorch](https://pytorch.org/) ≥ 2.0
+> References: [MedGIFT ILD database](https://doi.org/10.1016/j.compmedimag.2011.07.003) (Depeursinge et al., 2012) · [TexNet (manuscript, benchmark, results)](https://github.com/rsebany/TexNet)
 
 Compact PyTorch implementation of **ILD-TexNet** — a multi-scale texture network for six-class ILD pattern classification on 32×32 HRCT patches (~0.25M parameters, trained from scratch, no pretraining).
 
 | Component | Role |
 |-----------|------|
 | Multi-scale dilated stem | Parallel 3×3 convolutions (dilations 1, 2, 3) |
-| Dense SE-MBConv stages | DenseNet-style reuse with MobileNet-style inverted-residual blocks and squeeze-excitation |
+| Dense SE-MBConv stages | DenseNet-style reuse with MobileNetV3-style inverted residuals + squeeze-excitation |
 | Attention pooling | Learned spatial weighting before the classifier |
 
-Patient-disjoint evaluation, benchmark results, and the manuscript live in the companion repository: [TexNet](https://github.com/rsebany/TexNet).
-
-## Installation
+## Install
 
 ```bash
-pip install -e .
-# or: pip install -r requirements.txt
+pip install -e .   # or: pip install -r requirements.txt
 ```
 
-See [python.org](https://www.python.org/) and [pytorch.org/get-started](https://pytorch.org/get-started/locally/) for install instructions.
+Requires Python ≥ 3.9 and PyTorch ≥ 2.0.
 
 ## Usage
 
-**Inspect the model** (default — layer table, parameters, MACs, latency):
+Build and inspect the model (layer table, parameters, MACs, latency, forward sanity check):
 
 ```bash
 python main.py
-ildexnet --device cuda --json report.json
+# or, after install: ildexnet [--device cuda --json report.json]
 ```
 
-**Synthetic training demo** (no dataset bundled):
-
-```bash
-python main.py --train-demo
-```
-
-Architecture flags (`--stem-ch`, `--growth`, `--layers`, `--no-multiscale`, `--block bottleneck`, `--no-attn-pool`, etc.) mirror `ILDEXNET_*` environment variables in `ildexnet/config.py`.
-
-## Tests
-
-```bash
-pytest
-```
+Architecture flags (`--stem-ch`, `--growth`, `--layers`, `--no-multiscale`, `--block bottleneck`, `--no-attn-pool`, …) mirror `ILDEXNET_*` environment variables in `ildexnet/config.py`.
 
 ## Layout
 
@@ -52,12 +37,8 @@ ildexnet/
   models/components.py  # stem, blocks, attention pool
   cli.py                # command-line interface
   complexity.py         # profiling helpers
-  train.py              # synthetic demo trainer
+  config.py             # defaults (enabled via ILDEXNET_* env vars)
 ```
-
-## Citation
-
-Please cite the paper in [TexNet](https://github.com/rsebany/TexNet) if you use this code.
 
 ## License
 

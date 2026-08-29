@@ -1,12 +1,9 @@
 """Model complexity and timing instrumentation.
 
-Multiply-accumulate counts are computed from forward hooks on ``nn.Conv2d``
-and ``nn.Linear`` plus an explicit term for the attention matmuls inside
-``nn.MultiheadAttention``, which carry no parameters and would otherwise be
-invisible. FLOPs are taken as ``2 x MACs``, the usual convention. Latency and
-throughput are measured after a warmup with ``torch.cuda.synchronize()``
-around the timed region: without the synchronize, CUDA's asynchronous
-dispatch makes these numbers meaningless.
+MAC counts come from forward hooks on ``nn.Conv2d``/``nn.Linear`` plus an
+explicit term for the ``nn.MultiheadAttention`` matmuls (no parameters, so
+invisible to hooks). FLOPs are ``2 x MACs``. Latency/throughput is measured
+after warmup, with ``cuda.synchronize()`` around the timed region.
 """
 
 from __future__ import annotations
@@ -35,9 +32,8 @@ def count_macs(model, input_shape=(1, 32, 32), device="cpu"):
         totals["linear"] += int(repeats * mod.in_features * mod.out_features)
 
     def mha_hook(mod, inp, _out):
-        # out_proj is an nn.Linear child and is counted by linear_hook; the
-        # in-projections are bare Parameters, and the two batched matmuls have
-        # no parameters at all.
+        # out_proj is an nn.Linear(child, counted above); the in-projections
+        # are bare Parameters and the two batched matmuls have no parameters.
         q = inp[0]
         n_tok, dim = int(q.shape[1]), int(q.shape[2])
         totals["attention"] += int(n_tok * dim * dim * 3)
@@ -132,10 +128,7 @@ def _out_shape(out):
 def layer_summary(model, input_shape=(1, 32, 32), device="cpu"):
     """Per-module type / output-shape / parameter table via forward hooks.
 
-    Module names follow PyTorch's ``named_modules`` structure. Each row reports
-    the parameters owned *directly* by that module (containers report 0 and
-    their children carry the counts), together with the activation shape that
-    module produced on the reference forward pass.
+    Containers report 0 params and their children carry the counts.
     """
     shapes = {}
     handles = []

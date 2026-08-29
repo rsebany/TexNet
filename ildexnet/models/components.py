@@ -1,8 +1,8 @@
 """Shared building blocks for ILD-TexNet.
 
 Every module is implemented from scratch in PyTorch and initialised with a
-uniform scheme (:func:`_init_weights`), so the whole network is trainable from
-scratch with no pretrained weights anywhere.
+uniform scheme (:func:`_init_weights`), so the network trains from scratch
+with no pretrained weights anywhere.
 """
 
 from __future__ import annotations
@@ -13,12 +13,8 @@ import torch.nn.functional as F
 
 
 def _init_weights(module):
-    """One initialisation scheme for every layer type.
-
-    ``Conv2d`` -> Kaiming normal (fan-out); ``BatchNorm2d``/``GroupNorm`` ->
-    ones + zeros; ``Linear`` -> truncated normal (std 0.02), a convention
-    borrowed from Transformer initialisation.
-    """
+    """Conv2d -> Kaiming normal (fan-out); BN/GN -> ones + zeros;
+    Linear -> truncated normal (std 0.02)."""
     if isinstance(module, nn.Conv2d):
         nn.init.kaiming_normal_(module.weight, mode="fan_out",
                                 nonlinearity="relu")
@@ -49,12 +45,7 @@ class SqueezeExcite(nn.Module):
 
 
 class MultiScaleStem(nn.Module):
-    """Parallel dilated 3x3 convolutions: receptive fields 3, 5 and 7 px.
-
-    The first layer of an ILD texture network commits the model to a single
-    spatial-frequency band before any discrimination happens. Running three
-    dilations in parallel keeps the texture evidence at 3, 5 and 7 pixels.
-    """
+    """Parallel dilated 3x3 convolutions: receptive fields 3, 5 and 7 px."""
 
     def __init__(self, in_ch, out_ch, dilations=(1, 2, 3)):
         super().__init__()
@@ -74,11 +65,7 @@ class MultiScaleStem(nn.Module):
 
 class DenseLayer(nn.Module):
     """Bottleneck dense block (1x1 -> 3x3, BN+ReLU between), growth ``growth``.
-
-    Used by the ``block="bottleneck"`` control: it keeps DenseNet-style feature
-    reuse while dropping the separable convolution and squeeze-excitation, so
-    those two can be ablated without also removing connectivity.
-    """
+    Used by the ``block="bottleneck"`` ablation control."""
 
     def __init__(self, cin, growth, bn_size=4):
         super().__init__()
@@ -95,12 +82,7 @@ class DenseLayer(nn.Module):
 
 
 class DenseSEMBConv(nn.Module):
-    """MBConv with squeeze-excitation whose output is concatenated, not added.
-
-    Dense concatenation keeps the high-frequency stem features reachable by
-    the classifier at every depth, while the separable form keeps that reuse
-    affordable.
-    """
+    """MBConv with squeeze-excitation whose output is concatenated, not added."""
 
     def __init__(self, cin, growth, expand=4, kernel=3):
         super().__init__()
@@ -121,10 +103,8 @@ class DenseSEMBConv(nn.Module):
 class AttentionPool2d(nn.Module):
     """Learned spatial weighting before the classifier.
 
-    Texture patches can be only ~70% class-pure, so global average pooling
-    would blend off-class tissue into the descriptor. A learned spatial
-    weighting lets the classifier concentrate on the region that carries the
-    label.
+    Patches can be only ~70% class-pure, so a learned weighting lets the
+    classifier concentrate on the region that carries the label.
     """
 
     def __init__(self, ch, hidden=None):
