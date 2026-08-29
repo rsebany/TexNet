@@ -50,7 +50,7 @@ ildexnet/
 
 ## Dataset
 
-Dataset used: **MedGIFT**, the public ILD database from [Depeursinge et al. (2012)](https://doi.org/10.1016/j.compmedimag.2011.07.003) (103 patients, six classes: Healthy, Emphysema, Fibrosis, Ground Glass, Micronodules, Consolidation). Patch extraction, splits, and the full patient-disjoint evaluation live in the [TexNet](https://github.com/rsebany/TexNet) repository.
+Dataset used: **MedGIFT**, the public ILD database of [Depeursinge et al. (2012)](https://doi.org/10.1016/j.compmedimag.2011.07.003) · [Google Scholar](https://scholar.google.com/scholar?q=%22Building+a+reference+multimedia+database+for+interstitial+lung+diseases%22). Patch extraction, splits, and the full patient-disjoint evaluation live in the [TexNet](https://github.com/rsebany/TexNet) repository.
 
 ## License
 
